@@ -1,6 +1,9 @@
+import { showToast } from '../state/toast'
+
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text)
+    showToast('Copied to clipboard')
     return true
   } catch {
     const textarea = document.createElement('textarea')
@@ -11,6 +14,9 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     textarea.select()
     const ok = document.execCommand('copy')
     document.body.removeChild(textarea)
+    if (ok) {
+      showToast('Copied to clipboard')
+    }
     return ok
   }
 }

@@ -10,6 +10,7 @@ import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
 import { content, setContent, theme as themeSignal } from '../state/editor'
 import { savePrompt } from '../state/prompts'
 import { showToast } from '../state/toast'
+import { copyToClipboard } from '../lib/clipboard'
 import { darkTheme, darkSyntax } from '../themes/dark'
 import { lightTheme, lightSyntax } from '../themes/light'
 
@@ -50,6 +51,17 @@ export function Editor() {
             run: () => {
               savePrompt()
               showToast('Saved')
+              return true
+            },
+          },
+          {
+            key: 'Mod-c',
+            run: (view) => {
+              if (!view.state.selection.ranges.every((range) => range.empty)) {
+                return false
+              }
+
+              void copyToClipboard(view.state.doc.toString())
               return true
             },
           },

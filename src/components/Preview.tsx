@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'preact/hooks'
 import { content, setContent } from '../state/editor'
 import { renderMarkdown } from '../lib/markdown'
+import { copyToClipboard } from '../lib/clipboard'
 import {
   applyMarkdownShortcuts,
   applyToolbarAction,
@@ -163,6 +164,17 @@ export function Preview() {
       if (!(event.metaKey || event.ctrlKey)) return
 
       const key = event.key.toLowerCase()
+      if (key === 'c') {
+        const selection = window.getSelection()
+        const hasSelection = Boolean(selection && !selection.isCollapsed && selection.toString().length)
+
+        if (hasSelection) return
+
+        event.preventDefault()
+        void copyToClipboard(serializeRichMarkdown(containerRef.current))
+        return
+      }
+
       const action =
         key === 'b'
           ? { kind: 'bold' as const }

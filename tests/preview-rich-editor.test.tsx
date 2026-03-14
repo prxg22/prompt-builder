@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/preact'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Preview } from '../src/components/Preview'
 import { content, viewMode } from '../src/state/editor'
+import { toasts } from '../src/state/toast'
 
 function placeCaretAtStart(node: Node) {
   const selection = window.getSelection()
@@ -141,6 +142,38 @@ describe('Preview rich editor', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Bold selected text' }))
 
     expect(execCommand).toHaveBeenCalledWith('bold')
+  })
+
+  it('copies the full content when copy is triggered without a selection', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, {
+      clipboard: {
+        writeText,
+      },
+    })
+
+    const { container } = render(<Preview />)
+    const editable = container.querySelector('.preview-editable') as HTMLElement
+
+    await waitFor(() => {
+      expect(editable.querySelector('h1')?.textContent).toBe('Heading')
+    })
+
+    placeCaretAtStart(editable.querySelector('h1')?.firstChild as Node)
+    const event = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: true,
+      key: 'c',
+    })
+
+    editable.dispatchEvent(event)
+
+    await waitFor(() => {
+      expect(event.defaultPrevented).toBe(true)
+      expect(writeText).toHaveBeenCalledWith('# Heading\n\nParagraph with **bold** text')
+      expect(toasts.value.at(-1)?.message).toBe('Copied to clipboard')
+    })
   })
 
   it('moves the floating selection toolbar below when there is not enough space above', async () => {
