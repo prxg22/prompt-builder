@@ -59,11 +59,21 @@ export function parseBlockMarkdownShortcut(text: string): BlockMarkdownShortcut 
 }
 
 export function serializeRichMarkdown(root: ParentNode): string {
-  const lines = Array.from(root.childNodes)
+  const blocks = Array.from(root.childNodes)
     .map((node) => serializeBlock(node))
     .filter((block): block is string => Boolean(block && block.trim()))
 
-  return lines.join('\n\n').replace(/\n{3,}/g, '\n\n').trim()
+  if (blocks.length === 0) return ''
+
+  const parts: string[] = [blocks[0]]
+  for (let i = 1; i < blocks.length; i++) {
+    const prev = blocks[i - 1]
+    const curr = blocks[i]
+    const separator = prev.trimStart().startsWith('|') && curr.trimStart().startsWith('|') ? '\n' : '\n\n'
+    parts.push(separator, curr)
+  }
+
+  return parts.join('').replace(/\n{3,}/g, '\n\n').trim()
 }
 
 export function applyMarkdownShortcuts(editor: HTMLElement): boolean {
