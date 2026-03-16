@@ -33,7 +33,7 @@ function persistActiveId(id: string | null) {
 
 export const prompts = signal<Prompt[]>(loadPrompts())
 export const activePromptId = signal<string | null>(localStorage.getItem(ACTIVE_KEY))
-export const sidebarOpen = signal(false)
+export const sidebarOpen = signal(true)
 export const saveDialogPromptId = signal<string | null>(null)
 
 export const activePrompt = computed(() =>

@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
-import { content, toggleTheme, theme, toggleViewMode, viewMode } from '../state/editor'
+import { content, toggleTheme, theme, cycleViewMode, viewMode } from '../state/editor'
 import { copyToClipboard } from '../lib/clipboard'
-import { activePrompt, openSaveDialog } from '../state/prompts'
+import { activePrompt, openSaveDialog, sidebarOpen, toggleSidebar } from '../state/prompts'
 
 function SunIcon() {
   return (
@@ -56,12 +56,42 @@ function SplitIcon() {
   )
 }
 
-function FullScreenIcon() {
+function CodeIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <path d="M5.5 4L2 8l3.5 4M10.5 4L14 8l-3.5 4" />
+    </svg>
+  )
+}
+
+function PreviewIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
       <rect x="1.5" y="2" width="13" height="12" rx="1.5" />
+      <path d="M4 6h8M4 8.5h5" />
     </svg>
   )
+}
+
+function SidebarIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <rect x="1.5" y="2" width="13" height="12" rx="1.5" />
+      <line x1="6" y1="2" x2="6" y2="14" />
+    </svg>
+  )
+}
+
+const viewModeLabel: Record<string, string> = {
+  split: 'Split view',
+  editor: 'Code editor',
+  preview: 'Markdown preview',
+}
+
+const viewModeIcon: Record<string, () => preact.JSX.Element> = {
+  split: SplitIcon,
+  editor: CodeIcon,
+  preview: PreviewIcon,
 }
 
 export function Header() {
@@ -80,12 +110,23 @@ export function Header() {
     openSaveDialog(activePrompt.value.id)
   }
 
+  const mode = viewMode.value
+  const ViewIcon = viewModeIcon[mode]
+
   return (
     <header
       class="flex items-center justify-between h-11 px-4 select-none shrink-0"
       style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-app)' }}
     >
       <div class="flex items-center gap-2 min-w-0">
+        <button
+          onClick={toggleSidebar}
+          class="flex items-center justify-center w-8 h-8 rounded-md hover:bg-[var(--accent-hover)] transition-colors"
+          style={{ color: sidebarOpen.value ? 'var(--accent)' : 'var(--text-secondary)' }}
+          title={sidebarOpen.value ? 'Hide sidebar' : 'Show sidebar'}
+        >
+          <SidebarIcon />
+        </button>
         <div class="shrink-0"><AppIcon /></div>
         <span
           class={`font-semibold text-sm tracking-tight truncate ${activePrompt.value ? 'cursor-pointer hover:underline' : ''}`}
@@ -121,12 +162,12 @@ export function Header() {
         </button>
 
         <button
-          onClick={toggleViewMode}
+          onClick={cycleViewMode}
           class="flex items-center justify-center w-8 h-8 rounded-md hover:bg-[var(--accent-hover)] transition-colors"
           style={{ color: 'var(--text-secondary)' }}
-          title={viewMode.value === 'split' ? 'Preview only' : 'Split view'}
+          title={viewModeLabel[mode]}
         >
-          {viewMode.value === 'split' ? <FullScreenIcon /> : <SplitIcon />}
+          <ViewIcon />
         </button>
       </div>
     </header>

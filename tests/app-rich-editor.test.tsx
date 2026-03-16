@@ -13,21 +13,27 @@ describe('App rich editor layout', () => {
     content.value = '# Heading'
   })
 
-  it('keeps the source editor available in split view and keeps the rich preview editable in both layouts', async () => {
+  it('cycles through split, editor-only, and preview-only views', async () => {
     render(<App />)
 
+    // Split view: both editor and preview visible
     expect(screen.getByTestId('source-editor')).toBeTruthy()
     expect(screen.getByRole('toolbar', { name: 'Markdown formatting' })).toBeTruthy()
     expect(document.querySelector('.preview-editable')).not.toBeNull()
 
-    fireEvent.click(screen.getByTitle('Preview only'))
+    // Click cycles split → editor
+    fireEvent.click(screen.getByTitle('Split view'))
+    expect(screen.getByTestId('source-editor')).toBeTruthy()
+    expect(document.querySelector('.preview-editable')).toBeNull()
 
+    // Click cycles editor → preview
+    fireEvent.click(screen.getByTitle('Code editor'))
     expect(screen.queryByTestId('source-editor')).toBeNull()
     expect(await screen.findByRole('toolbar', { name: 'Markdown formatting' })).toBeTruthy()
     expect(document.querySelector('.preview-editable')).not.toBeNull()
 
-    fireEvent.click(screen.getByTitle('Split view'))
-
+    // Click cycles preview → split
+    fireEvent.click(screen.getByTitle('Markdown preview'))
     expect(screen.getByTestId('source-editor')).toBeTruthy()
     expect(screen.getByRole('toolbar', { name: 'Markdown formatting' })).toBeTruthy()
   })

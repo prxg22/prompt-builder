@@ -1,6 +1,6 @@
 import { signal, computed } from '@preact/signals'
 
-export type ViewMode = 'split' | 'preview'
+export type ViewMode = 'split' | 'editor' | 'preview'
 export type Theme = 'dark' | 'light'
 
 const DEFAULT_CONTENT = ''
@@ -20,8 +20,10 @@ export const lineCount = computed(() => {
   return content.value.split('\n').length
 })
 
-export function toggleViewMode() {
-  viewMode.value = viewMode.value === 'split' ? 'preview' : 'split'
+export function cycleViewMode() {
+  const modes: ViewMode[] = ['split', 'editor', 'preview']
+  const idx = modes.indexOf(viewMode.value)
+  viewMode.value = modes[(idx + 1) % modes.length]
 }
 
 export function toggleTheme() {

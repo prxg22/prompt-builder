@@ -184,6 +184,62 @@ body {
   cursor: default;
 }
 
+/* Resize handles */
+.resize-handle {
+  flex-shrink: 0;
+  background: transparent;
+  position: relative;
+  z-index: 5;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  border-radius: 2px;
+  opacity: 0;
+  background: var(--accent);
+  transition: opacity 150ms ease;
+}
+
+.resize-handle:hover::after {
+  opacity: 1;
+}
+
+.resize-handle-h {
+  width: 5px;
+  cursor: col-resize;
+  margin: 0 -2px;
+}
+
+.resize-handle-h::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 32px;
+}
+
+.resize-handle-v {
+  height: 5px;
+  cursor: row-resize;
+  margin: -2px 0;
+}
+
+.resize-handle-v::after {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 3px;
+  width: 32px;
+}
+
+/* Sidebar responsive width */
+@media (min-width: 768px) {
+  main > aside {
+    width: var(--sidebar-w, 288px) !important;
+  }
+}
+
 /* Toast animation */
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(8px); }

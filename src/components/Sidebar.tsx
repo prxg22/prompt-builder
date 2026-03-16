@@ -77,13 +77,7 @@ export function Sidebar() {
   const activeId = activePromptId.value
 
   return (
-    <aside
-      class="flex h-56 shrink-0 flex-col border-b md:h-full md:w-72 md:border-b-0 md:border-r"
-      style={{
-        background: 'var(--bg-surface)',
-        borderColor: 'var(--border)',
-      }}
-    >
+    <>
       <div
         class="flex items-center justify-between h-11 px-3 shrink-0"
         style={{ borderBottom: '1px solid var(--border)' }}
@@ -116,6 +110,6 @@ export function Sidebar() {
           <PromptItem key={p.id} prompt={p} isActive={p.id === activeId} />
         ))}
       </div>
-    </aside>
+    </>
   )
 }
