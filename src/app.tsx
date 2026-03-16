@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'preact/hooks'
+import { useRef, useCallback } from 'preact/hooks'
 import { viewMode } from './state/editor'
 import { sidebarOpen } from './state/prompts'
 import { Header } from './components/Header'
